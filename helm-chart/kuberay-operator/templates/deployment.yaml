@@ -17,6 +17,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "kuberay-operator.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: kuberay-operator
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -35,6 +36,12 @@ spec:
           volumeMounts: []
           command:
             - /manager
+          args:
+          {{- if .Values.batchScheduler.enabled }}
+            - --enable-batch-scheduler
+          {{- else }}
+            []
+          {{- end }}
           ports:
             - name: http
               containerPort: 8080
