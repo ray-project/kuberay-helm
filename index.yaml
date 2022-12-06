@@ -21,6 +21,16 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0-rc.0/kuberay-apiserver-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
+  - apiVersion: v2
+    appVersion: 0.4.0-rc.0
+    created: "2022-12-06T23:12:01.677447401Z"
+    description: A Helm chart for kuberay-apiserver
+    digest: 71779652bcdf93943b2ff1f0cebbad25339c219e3e5701dc75dfa11b0004247e
+    name: kuberay-apiserver
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0-rc.0/kuberay-apiserver-0.4.0-rc.0.tgz
+    version: 0.4.0-rc.0
   kuberay-operator:
   - apiVersion: v2
     appVersion: "1.0"
@@ -38,6 +48,17 @@ entries:
     created: "2022-12-06T22:53:03.359914916Z"
     description: A Helm chart for Kubernetes
     digest: f014093f9559c817eb8830d275fa240acefa8bc8dc132ad846c9d9e25478463f
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: kuberay-operator
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-0.4.0-rc.0/kuberay-operator-0.4.0-rc.0.tgz
+    version: 0.4.0-rc.0
+  - apiVersion: v2
+    appVersion: 0.4.0-rc.0
+    created: "2022-12-06T23:12:01.913509569Z"
+    description: A Helm chart for Kubernetes
+    digest: f317c3bf309c4a1a0e70d2386976ab6184127712be33a21ab773520a4ae36449
     icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
     name: kuberay-operator
     type: application
@@ -65,4 +86,14 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0-rc.0/ray-cluster-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
-generated: "2022-12-06T22:53:03.580803489Z"
+  - apiVersion: v1
+    appVersion: 0.4.0-rc.0
+    created: "2022-12-06T23:12:02.091622449Z"
+    description: A Helm chart for Kubernetes
+    digest: 0aea72ae1562ab52df92a2d94069224570fdad4645b69d0b64ad2d951c2ca8ae
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: ray-cluster
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0-rc.0/ray-cluster-0.4.0-rc.0.tgz
+    version: 0.4.0-rc.0
+generated: "2022-12-06T23:12:02.09166705Z"
