@@ -11,6 +11,16 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0/kuberay-apiserver-0.4.0.tgz
     version: 0.4.0
+  - apiVersion: v2
+    appVersion: 0.4.0-rc.0
+    created: "2022-12-06T22:53:03.105989828Z"
+    description: A Helm chart for kuberay-apiserver
+    digest: 68f301127b340acc670e31c492cba6ea6753bba269c7de1c3597a289a4a1cc4f
+    name: kuberay-apiserver
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0-rc.0/kuberay-apiserver-0.4.0-rc.0.tgz
+    version: 0.4.0-rc.0
   kuberay-operator:
   - apiVersion: v2
     appVersion: "1.0"
@@ -23,6 +33,17 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-0.4.0/kuberay-operator-0.4.0.tgz
     version: 0.4.0
+  - apiVersion: v2
+    appVersion: 0.4.0-rc.0
+    created: "2022-12-06T22:53:03.359914916Z"
+    description: A Helm chart for Kubernetes
+    digest: f014093f9559c817eb8830d275fa240acefa8bc8dc132ad846c9d9e25478463f
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: kuberay-operator
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-0.4.0-rc.0/kuberay-operator-0.4.0-rc.0.tgz
+    version: 0.4.0-rc.0
   ray-cluster:
   - apiVersion: v1
     appVersion: "1.0"
@@ -34,4 +55,14 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0/ray-cluster-0.4.0.tgz
     version: 0.4.0
-generated: "2022-11-14T23:13:05.506900443Z"
+  - apiVersion: v1
+    appVersion: 0.4.0-rc.0
+    created: "2022-12-06T22:53:03.580665687Z"
+    description: A Helm chart for Kubernetes
+    digest: 24b07c87291b649265d9da3413f4d68eeaa21b59c7256aeaaa2821d4616ea48b
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: ray-cluster
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0-rc.0/ray-cluster-0.4.0-rc.0.tgz
+    version: 0.4.0-rc.0
+generated: "2022-12-06T22:53:03.580803489Z"
