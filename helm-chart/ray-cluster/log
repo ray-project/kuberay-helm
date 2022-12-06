@@ -1,0 +1,262 @@
+install.go:178: [debug] Original chart version: ""
+install.go:195: [debug] CHART PATH: /Users/dmitrigekhtman/code/kuberay/helm-chart/ray-cluster
+
+NAME: security-template
+LAST DEPLOYED: Thu Dec  1 14:32:18 2022
+NAMESPACE: pod-security
+STATUS: pending-install
+REVISION: 1
+TEST SUITE: None
+USER-SUPPLIED VALUES:
+{}
+
+COMPUTED VALUES:
+additionalWorkerGroups:
+  smallGroup:
+    affinity: {}
+    annotations:
+      key: value
+    containerEnv: []
+    disabled: true
+    envFrom: []
+    initContainerImage: busybox:1.28
+    initContainerSecurityContext: {}
+    labels: {}
+    maxReplicas: 3
+    minReplicas: 1
+    nodeSelector: {}
+    rayStartParams:
+      block: "true"
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1
+      requests:
+        cpu: 200m
+    securityContext: {}
+    sidecarContainers: []
+    tolerations: []
+    type: worker
+    volumeMounts:
+    - mountPath: /tmp/ray
+      name: log-volume
+    volumes:
+    - emptyDir: {}
+      name: log-volume
+fullnameOverride: ""
+head:
+  affinity: {}
+  annotations: {}
+  containerEnv: []
+  envFrom: []
+  groupName: headgroup
+  nodeSelector: {}
+  rayStartParams:
+    block: "true"
+    dashboard-host: 0.0.0.0
+  resources:
+    limits:
+      cpu: 1
+    requests:
+      cpu: 1
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  sidecarContainers: []
+  tolerations: []
+  volumeMounts:
+  - mountPath: /tmp/ray
+    name: log-volume
+  volumes:
+  - emptyDir: {}
+    name: log-volume
+image:
+  pullPolicy: IfNotPresent
+  repository: rayproject/ray
+  tag: 2.0.0
+imagePullSecrets: []
+nameOverride: kuberay
+service:
+  type: ClusterIP
+worker:
+  affinity: {}
+  annotations:
+    key: value
+  containerEnv: []
+  envFrom: []
+  groupName: workergroup
+  initContainerImage: busybox:1.28
+  initContainerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  nodeSelector: {}
+  rayStartParams:
+    block: "true"
+  replicas: 1
+  resources:
+    limits:
+      cpu: 1
+    requests:
+      cpu: 200m
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  sidecarContainers: []
+  tolerations: []
+  type: worker
+  volumeMounts:
+  - mountPath: /tmp/ray
+    name: log-volume
+  volumes:
+  - emptyDir: {}
+    name: log-volume
+
+HOOKS:
+MANIFEST:
+---
+# Source: ray-cluster/templates/raycluster-cluster.yaml
+apiVersion: ray.io/v1alpha1
+kind: RayCluster
+metadata:
+  labels:
+    app.kubernetes.io/name: kuberay
+    helm.sh/chart: ray-cluster-0.3.0
+    app.kubernetes.io/instance: security-template
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+  name: security-template-kuberay
+  
+spec:
+  headGroupSpec:
+    serviceType: ClusterIP
+    rayStartParams:
+      block: "true"
+      dashboard-host: "0.0.0.0"
+    template:
+      spec:
+        imagePullSecrets:
+          []
+        containers:
+          - volumeMounts:
+            - mountPath: /tmp/ray
+              name: log-volume
+            name: ray-head
+            image: rayproject/ray:2.0.0
+            imagePullPolicy: IfNotPresent
+            resources:
+              limits:
+                cpu: 1
+              requests:
+                cpu: 1
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                - ALL
+              runAsNonRoot: true
+              seccompProfile:
+                type: RuntimeDefault
+            env:
+              []
+        volumes:
+          - emptyDir: {}
+            name: log-volume
+        affinity:
+          {}
+        tolerations:
+          []
+        nodeSelector:
+          {}
+      metadata:
+        annotations:
+          {}
+        labels:
+          app.kubernetes.io/name: kuberay
+          helm.sh/chart: ray-cluster-0.3.0
+          app.kubernetes.io/instance: security-template
+          app.kubernetes.io/version: "1.0"
+          app.kubernetes.io/managed-by: Helm
+
+  workerGroupSpecs:
+  - rayStartParams:
+      block: "true"
+    replicas: 1
+    minReplicas: 1
+    maxReplicas: 2147483647
+    groupName: workergroup
+    template:
+      spec:
+        imagePullSecrets:
+          []
+        initContainers:
+          - name: init
+            image: busybox:1.28
+            command: ['sh', '-c', "until nslookup $RAY_IP.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for K8s Service $RAY_IP; sleep 2; done"]
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                - ALL
+              runAsNonRoot: true
+              runAsUser: 1000
+              seccompProfile:
+                type: RuntimeDefault
+        containers:
+          - volumeMounts:
+            - mountPath: /tmp/ray
+              name: log-volume
+            name: ray-worker
+            image: rayproject/ray:2.0.0
+            imagePullPolicy: IfNotPresent
+            resources:
+              limits:
+                cpu: 1
+              requests:
+                cpu: 200m
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                - ALL
+              runAsNonRoot: true
+              seccompProfile:
+                type: RuntimeDefault
+            env:
+              []
+            ports:
+              null
+        volumes:
+          - emptyDir: {}
+            name: log-volume
+        affinity:
+          {}
+        tolerations:
+          []
+        nodeSelector:
+          {}
+      metadata:
+        annotations:
+          key: value
+        labels:
+          app.kubernetes.io/name: kuberay
+          helm.sh/chart: ray-cluster-0.3.0
+          app.kubernetes.io/instance: security-template
+          app.kubernetes.io/version: "1.0"
+          app.kubernetes.io/managed-by: Helm
+
