@@ -1,0 +1,37 @@
+apiVersion: v1
+entries:
+  kuberay-apiserver:
+  - apiVersion: v2
+    appVersion: 0.4.0-rc.0
+    created: "2022-12-07T00:28:51.414890803Z"
+    description: A Helm chart for kuberay-apiserver
+    digest: f24916323f580ae8e6d295590bd5e88439d9c3dafeae0a212f5bac60b82b9212
+    name: kuberay-apiserver
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0-rc.0/kuberay-apiserver-0.4.0-rc.0.tgz
+    version: 0.4.0-rc.0
+  kuberay-operator:
+  - apiVersion: v2
+    appVersion: 0.4.0-rc.0
+    created: "2022-12-07T00:28:51.584904775Z"
+    description: A Helm chart for Kubernetes
+    digest: a586713e4c34af47ea1e7c0e8987015779bf90bbf56a6a56e84cdc2c539a48e7
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: kuberay-operator
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-0.4.0-rc.0/kuberay-operator-0.4.0-rc.0.tgz
+    version: 0.4.0-rc.0
+  ray-cluster:
+  - apiVersion: v1
+    appVersion: 0.4.0-rc.0
+    created: "2022-12-07T00:28:51.7330043Z"
+    description: A Helm chart for Kubernetes
+    digest: 1fe95003ab3b66ce3296113c1eb252f0a9ce0c41655345bfe44bde75d2174a9e
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: ray-cluster
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0-rc.0/ray-cluster-0.4.0-rc.0.tgz
+    version: 0.4.0-rc.0
+generated: "2022-12-07T00:28:51.73301Z"
