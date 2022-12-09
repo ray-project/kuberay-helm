@@ -2,6 +2,15 @@ apiVersion: v1
 entries:
   kuberay-apiserver:
   - apiVersion: v2
+    created: "2022-12-09T03:19:21.751676321Z"
+    description: A Helm chart for kuberay-apiserver
+    digest: 784a3c56f21876b58386c7b46ce640a5c04cad62d001ca951d055597226136f9
+    name: kuberay-apiserver
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0/kuberay-apiserver-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
     appVersion: 0.4.0-rc.0
     created: "2022-12-07T00:28:51.414890803Z"
     description: A Helm chart for kuberay-apiserver
@@ -12,6 +21,16 @@ entries:
     - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0-rc.0/kuberay-apiserver-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
   kuberay-operator:
+  - apiVersion: v2
+    created: "2022-12-09T03:19:21.904484455Z"
+    description: A Helm chart for Kubernetes
+    digest: b1158d94fc8be20a6aa2968fdc5ac634dd1f0f7d1f337c39da1ecbe4721aad58
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: kuberay-operator
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-0.4.0/kuberay-operator-0.4.0.tgz
+    version: 0.4.0
   - apiVersion: v2
     appVersion: 0.4.0-rc.0
     created: "2022-12-07T00:28:51.584904775Z"
@@ -25,6 +44,15 @@ entries:
     version: 0.4.0-rc.0
   ray-cluster:
   - apiVersion: v1
+    created: "2022-12-09T03:19:22.221107664Z"
+    description: A Helm chart for Kubernetes
+    digest: 4719270eaa0ff01d6a17fcb2e68ca91a89785617dc5fdd2710f62335df8a627f
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: ray-cluster
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0/ray-cluster-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v1
     appVersion: 0.4.0-rc.0
     created: "2022-12-07T00:28:51.7330043Z"
     description: A Helm chart for Kubernetes
@@ -34,4 +62,4 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0-rc.0/ray-cluster-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
-generated: "2022-12-07T00:28:51.73301Z"
+generated: "2022-12-09T03:19:22.221128764Z"
