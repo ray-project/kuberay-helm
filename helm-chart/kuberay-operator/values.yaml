@@ -4,7 +4,7 @@
 
 image:
   repository: kuberay/operator
-  tag: v0.4.0-rc.0
+  tag: v0.4.0
   pullPolicy: IfNotPresent
 
 nameOverride: "kuberay-operator"
@@ -25,9 +25,6 @@ serviceAccount:
 service:
   type: ClusterIP
   port: 8080
-
-ingress:
-  enabled: false
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
