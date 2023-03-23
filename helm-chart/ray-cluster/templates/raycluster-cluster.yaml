@@ -101,7 +101,7 @@ spec:
             env:
             {{- toYaml $values.containerEnv | nindent 14}}
             {{- with $values.envFrom }}
-            envFrom: {{- toYaml $ | nindent 14}}
+            envFrom: {{- toYaml . | nindent 14}}
             {{- end }}
             ports: {{- toYaml $values.ports | nindent 14}}
             {{- if $values.lifecycle }}
