@@ -5970,12 +5970,15 @@ spec:
                         type: object
                     required:
                     - rayStartParams
-                    - serviceType
                     - template
                     type: object
+                  headServiceAnnotations:
+                    additionalProperties:
+                      type: string
+                    type: object
                   rayVersion:
-                    description: RayVersion is the version of ray being used. this
-                      affects the command used to start ray
+                    description: RayVersion is the version of ray being used. This
+                      determines the autoscaler's image version.
                     type: string
                   workerGroupSpecs:
                     description: WorkerGroupSpecs are the specs for the worker pods
@@ -11769,6 +11772,11 @@ spec:
                 type: string
               message:
                 type: string
+              observedGeneration:
+                description: observedGeneration is the most recent generation observed
+                  for this RayJob.
+                format: int64
+                type: integer
               rayClusterName:
                 type: string
               rayClusterStatus:
@@ -11812,6 +11820,11 @@ spec:
                     description: MinWorkerReplicas indicates sum of minimum replicas
                       of each node group.
                     format: int32
+                    type: integer
+                  observedGeneration:
+                    description: observedGeneration is the most recent generation
+                      observed for this RayCluster.
+                    format: int64
                     type: integer
                   reason:
                     description: Reason provides more information about current State
