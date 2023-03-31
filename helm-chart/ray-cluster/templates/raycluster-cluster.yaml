@@ -32,6 +32,9 @@ spec:
     template:
       spec:
         imagePullSecrets: {{- toYaml .Values.imagePullSecrets | nindent 10 }}
+        {{- if .Values.head.serviceAccountName }}
+        serviceAccountName: {{ .Values.head.serviceAccountName }}
+        {{- end }}
         containers:
           - volumeMounts: {{- toYaml .Values.head.volumeMounts | nindent 12 }}
             name: ray-head
@@ -52,6 +55,12 @@ spec:
             lifecycle:
             {{- toYaml .Values.head.lifecycle | nindent 14 }}
             {{- end }}
+            {{- if .Values.head.command }}
+            command: {{- toYaml .Values.head.command | nindent 14}}
+            {{- end }}
+            {{- if .Values.head.args }}
+            args: {{- toYaml .Values.head.args | nindent 14}}
+            {{- end }}
           {{- if .Values.head.sidecarContainers }}
           {{- toYaml .Values.head.sidecarContainers | nindent 10 }}
           {{- end }}
@@ -61,8 +70,12 @@ spec:
         nodeSelector: {{- toYaml .Values.head.nodeSelector | nindent 10 }}
       metadata:
         annotations: {{- toYaml .Values.head.annotations | nindent 10 }}
-        labels:
+        {{- if .Values.head.labels }}
+        labels: {{- toYaml .Values.head.labels | nindent 10 }}
 {{ include "ray-cluster.labels" . | indent 10 }}
+        {{ else }}
+        labels: {{ include "ray-cluster.labels" . | nindent 10 }}
+        {{- end }} 
 
   workerGroupSpecs:
   {{- range $groupName, $values := .Values.additionalWorkerGroups }}
@@ -87,9 +100,12 @@ spec:
         initContainers:
           - name: init
             image: {{ $values.initContainerImage | default "busybox:1.28" }}
-            command: ['sh', '-c', "until nslookup $RAY_IP.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for K8s Service $RAY_IP; sleep 2; done"]
+            command: ['sh', '-c', "until nslookup $FQ_RAY_IP; do echo waiting for K8s Service $FQ_RAY_IP; sleep 2; done"]
             securityContext:
             {{- toYaml $values.initContainerSecurityContext | nindent 14 }}
+        {{- if $values.serviceAccountName }}
+        serviceAccountName: {{ $values.serviceAccountName }}
+        {{- end }}
         containers:
           - volumeMounts: {{- toYaml $values.volumeMounts | nindent 12 }}
             name: ray-worker
@@ -108,6 +124,12 @@ spec:
             lifecycle:
             {{- toYaml $values.lifecycle | nindent 14 }}
             {{- end }}
+            {{- if $values.command }}
+            command: {{- toYaml $values.command | nindent 14}}
+            {{- end }}
+            {{- if $values.args }}
+            args: {{- toYaml $values.args | nindent 14}}
+            {{- end }}
           {{- if $values.sidecarContainers }}
           {{- toYaml $values.sidecarContainers | nindent 10 }}
           {{- end }}
@@ -117,8 +139,13 @@ spec:
         nodeSelector: {{- toYaml $values.nodeSelector | nindent 10 }}
       metadata:
         annotations: {{- toYaml $values.annotations | nindent 10 }}
-        labels:
+        {{- if $values.labels }}
+        labels: {{- toYaml $values.labels | nindent 10 }}
 {{ include "ray-cluster.labels" $ | indent 10 }}
+        {{ else }}
+        labels: {{ include "ray-cluster.labels" $ | nindent 10 }}
+        {{- end }} 
+
   {{- end }}
   {{- end }}
   {{- if ne (.Values.worker.disabled | default false) true }}
@@ -142,9 +169,12 @@ spec:
         initContainers:
           - name: init
             image: {{ .Values.worker.initContainerImage | default "busybox:1.28" }}
-            command: ['sh', '-c', "until nslookup $RAY_IP.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for K8s Service $RAY_IP; sleep 2; done"]
+            command: ['sh', '-c', "until nslookup $FQ_RAY_IP; do echo waiting for K8s Service $FQ_RAY_IP; sleep 2; done"]
             securityContext:
             {{- toYaml .Values.worker.initContainerSecurityContext | nindent 14 }}
+        {{- if .Values.worker.serviceAccountName }}
+        serviceAccountName: {{ .Values.worker.serviceAccountName }}
+        {{- end }}
         containers:
           - volumeMounts: {{- toYaml .Values.worker.volumeMounts | nindent 12 }}
             name: ray-worker
@@ -163,6 +193,12 @@ spec:
             lifecycle:
             {{- toYaml .Values.worker.lifecycle | nindent 14 }}
             {{- end }}
+            {{- if .Values.worker.command }}
+            command: {{- toYaml .Values.worker.command | nindent 14}}
+            {{- end }}
+            {{- if .Values.worker.args }}
+            args: {{- toYaml .Values.worker.args | nindent 14}}
+            {{- end }}
           {{- if .Values.worker.sidecarContainers }}
           {{- toYaml .Values.worker.sidecarContainers | nindent 10 }}
           {{- end }}
@@ -172,6 +208,10 @@ spec:
         nodeSelector: {{- toYaml .Values.worker.nodeSelector | nindent 10 }}
       metadata:
         annotations: {{- toYaml .Values.worker.annotations | nindent 10 }}
-        labels:
+        {{- if .Values.worker.labels }}
+        labels: {{- toYaml .Values.worker.labels | nindent 10 }}
 {{ include "ray-cluster.labels" . | indent 10 }}
+        {{ else }}
+        labels: {{ include "ray-cluster.labels" $ | nindent 10 }}
+        {{- end }}
   {{- end }}
