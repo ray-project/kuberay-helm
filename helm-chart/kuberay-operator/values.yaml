@@ -4,7 +4,7 @@
 
 image:
   repository: kuberay/operator
-  tag: v0.5.0
+  tag: v0.5.2
   pullPolicy: IfNotPresent
 
 nameOverride: "kuberay-operator"
@@ -55,18 +55,30 @@ batchScheduler:
 securityContext: {}
 
 # When singleNamespaceInstall is true:
-# - the chart can be installed by users with permissions to a single namespace only
-#   (this excludes the CRDs which can only be installed at cluster-scope)
-# - the KubeRay operator will only listen to the resource
-#   events from the operator's namespace by default
+# - Install namespaced RBAC resources instead of cluster-scoped ones so that the chart can be installed by users
+#   with permissions restricted to a single namespace. (Please note that this excludes the CRDs, which can only be installed at the cluster scope.)
+# - If "watchNamespace" is not set, the KubeRay operator will, by default, only listen
+#   to resource events within its own namespace.
 singleNamespaceInstall: false
 
-# kuberay operator will only watch the resource events from the "watchNamespace" namespace.
-# this option has no effect if singleNamespaceInstall is true, because we assume there are no
-# permissions outside of the current namespace
-# watchNamespace: ray-user-namespace
+# The KubeRay operator will watch the custom resources in the namespaces listed in the "watchNamespace" parameter.
+# watchNamespace:
+#   - n1
+#   - n2
 
 # Environment variables
-env: []
-# - name: EXAMPLE_ENV
-#   value: "1"
+env:
+# If not set or set to true, kuberay auto injects an init container waiting for ray GCS.
+# If false, you will need to inject your own init container to ensure ray GCS is up before the ray workers start.
+# Warning: we highly recommend setting to true and let kuberay handle for you.
+# - name: ENABLE_INIT_CONTAINER_INJECTION
+#   value: "true"
+# If not set or set to "", kuberay will pick up the default k8s cluster domain `cluster.local`
+# Otherwise, kuberay will use your custom domain
+# - name: CLUSTER_DOMAIN
+#   value: ""
+# Unconditionally requeue after the number of seconds specified in the
+# environment variable RAYCLUSTER_DEFAULT_REQUEUE_SECONDS_ENV. If the
+# environment variable is not set, requeue after the default value (300).
+# - name: RAYCLUSTER_DEFAULT_REQUEUE_SECONDS_ENV
+#   value: 300
