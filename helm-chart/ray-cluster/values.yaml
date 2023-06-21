@@ -7,7 +7,7 @@
 
 image:
   repository: rayproject/ray
-  tag: 2.0.0
+  tag: 2.4.0
   pullPolicy: IfNotPresent
 
 nameOverride: "kuberay"
@@ -17,7 +17,9 @@ imagePullSecrets: []
   # - name: an-existing-secret
 
 head:
-  groupName: headgroup
+  # rayVersion determines the autoscaler's image version.
+  # It should match the Ray version in the image of the containers.
+  # rayVersion: 2.4.0
   # If enableInTreeAutoscaling is true, the autoscaler sidecar will be added to the Ray head pod.
   # Ray autoscaler integration is supported only for Ray versions >= 1.11.0
   # Ray autoscaler integration is Beta with KubeRay >= 0.3.0 and Ray >= 2.0.0.
@@ -26,7 +28,11 @@ head:
   # The example configuration shown below below represents the DEFAULT values.
   # autoscalerOptions:
     # upscalingMode: Default
+    # idleTimeoutSeconds is the number of seconds to wait before scaling down a worker pod which is not using Ray resources.
     # idleTimeoutSeconds: 60
+    # imagePullPolicy optionally overrides the autoscaler container's default image pull policy (IfNotPresent).
+    # imagePullPolicy: IfNotPresent
+    # Optionally specify the autoscaler container's securityContext.
     # securityContext: {}
     # env: []
     # envFrom: []
@@ -39,11 +45,12 @@ head:
     #   requests:
     #     cpu: "500m"
     #     memory: "512Mi"
-  # labels:
-  #   key: value
+  labels: {}
+  # Note: From KubeRay v0.6.0, users need to create the ServiceAccount by themselves if they specify the `serviceAccountName`
+  # in the headGroupSpec. See https://github.com/ray-project/kuberay/pull/1128 for more details.
+  serviceAccountName: ""
   rayStartParams:
     dashboard-host: '0.0.0.0'
-    block: 'true'
   # containerEnv specifies environment variables for the Ray container,
   # Follows standard K8s container env schema.
   containerEnv: []
@@ -87,6 +94,10 @@ head:
   # sidecarContainers specifies additional containers to attach to the Ray pod.
   # Follows standard K8s container spec.
   sidecarContainers: []
+  # See docs/guidance/pod-command.md for more details about how to specify
+  # container command for head Pod.
+  command: []
+  args: []
 
 
 worker:
@@ -95,14 +106,9 @@ worker:
   # disabled: true
   groupName: workergroup
   replicas: 1
-  type: worker
-  # labels:
-  #   key: value
-  rayStartParams:
-    block: 'true'
-  initContainerImage: 'busybox:1.28'  # Enable users to specify the image for init container. Users can pull the busybox image from their private repositories.
-  # Security context for the init container.
-  initContainerSecurityContext: {}
+  labels: {}
+  serviceAccountName: ""
+  rayStartParams: {}
   # containerEnv specifies environment variables for the Ray container,
   # Follows standard K8s container env schema.
   containerEnv: []
@@ -129,8 +135,7 @@ worker:
     requests:
       cpu: "1"
       memory: "1G"
-  annotations:
-    key: value
+  annotations: {}
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -146,6 +151,10 @@ worker:
   # sidecarContainers specifies additional containers to attach to the Ray pod.
   # Follows standard K8s container spec.
   sidecarContainers: []
+  # See docs/guidance/pod-command.md for more details about how to specify
+  # container command for worker Pod.
+  command: []
+  args: []
 
 # The map's key is used as the groupName.
 # For example, key:small-group in the map below
@@ -157,13 +166,9 @@ additionalWorkerGroups:
     replicas: 1
     minReplicas: 1
     maxReplicas: 3
-    type: worker
     labels: {}
-    rayStartParams:
-      block: 'true'
-    initContainerImage: 'busybox:1.28'  # Enable users to specify the image for init container. Users can pull the busybox image from their private repositories.
-    # Security context for the init container.
-    initContainerSecurityContext: {}
+    serviceAccountName: ""
+    rayStartParams: {}
   # containerEnv specifies environment variables for the Ray container,
   # Follows standard K8s container env schema.
     containerEnv: []
@@ -190,8 +195,7 @@ additionalWorkerGroups:
       requests:
         cpu: 1
         memory: "1G"
-    annotations:
-      key: value
+    annotations: {}
     nodeSelector: {}
     tolerations: []
     affinity: {}
@@ -205,6 +209,15 @@ additionalWorkerGroups:
       - mountPath: /tmp/ray
         name: log-volume
     sidecarContainers: []
+    # See docs/guidance/pod-command.md for more details about how to specify
+    # container command for worker Pod.
+    command: []
+    args: []
 
+# Configuration for Head's Kubernetes Service
 service:
+  # This is optional, and the default is ClusterIP.
   type: ClusterIP
+  # Optional, for the user to provide any additional fields to the service.
+  # See https://pkg.go.dev/k8s.io/Kubernetes/pkg/api/v1#Service
+  headService: {}

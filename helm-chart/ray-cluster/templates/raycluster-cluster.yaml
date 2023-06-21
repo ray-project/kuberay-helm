@@ -18,20 +18,30 @@ spec:
   autoscalerOptions: {{- toYaml .Values.head.autoscalerOptions | nindent 4 }}
   {{- end }}
   headGroupSpec:
+    {{- if .Values.head.headService }}
+    headService: {{- toYaml .Values.head.headService | nindent 6 }}
+    {{- end }}
     serviceType: {{ .Values.service.type }}
     rayStartParams:
-    {{- range $key, $val := .Values.head.rayStartParams }}
-      {{ $key }}: {{ $val | quote }}
-    {{- end }}
-    {{- /*
-    initArgs is a deprecated alias for rayStartParams.
-    */}}
-    {{- range $key, $val := .Values.head.initArgs }}
-      {{ $key }}: {{ $val | quote }}
+    {{- if and (not .Values.head.rayStartParams) (not .Values.head.initArgs) }}
+      {}
+    {{- else }}
+      {{- range $key, $val := .Values.head.rayStartParams }}
+        {{ $key }}: {{ $val | quote }}
+      {{- end }}
+      {{- /*
+      initArgs is a deprecated alias for rayStartParams.
+      */}}
+      {{- range $key, $val := .Values.head.initArgs }}
+        {{ $key }}: {{ $val | quote }}
+      {{- end }}
     {{- end }}
     template:
       spec:
         imagePullSecrets: {{- toYaml .Values.imagePullSecrets | nindent 10 }}
+        {{- if .Values.head.serviceAccountName }}
+        serviceAccountName: {{ .Values.head.serviceAccountName }}
+        {{- end }}
         containers:
           - volumeMounts: {{- toYaml .Values.head.volumeMounts | nindent 12 }}
             name: ray-head
@@ -52,6 +62,12 @@ spec:
             lifecycle:
             {{- toYaml .Values.head.lifecycle | nindent 14 }}
             {{- end }}
+            {{- if .Values.head.command }}
+            command: {{- toYaml .Values.head.command | nindent 14}}
+            {{- end }}
+            {{- if .Values.head.args }}
+            args: {{- toYaml .Values.head.args | nindent 14}}
+            {{- end }}
           {{- if .Values.head.sidecarContainers }}
           {{- toYaml .Values.head.sidecarContainers | nindent 10 }}
           {{- end }}
@@ -61,21 +77,29 @@ spec:
         nodeSelector: {{- toYaml .Values.head.nodeSelector | nindent 10 }}
       metadata:
         annotations: {{- toYaml .Values.head.annotations | nindent 10 }}
-        labels:
+        {{- if .Values.head.labels }}
+        labels: {{- toYaml .Values.head.labels | nindent 10 }}
 {{ include "ray-cluster.labels" . | indent 10 }}
+        {{ else }}
+        labels: {{ include "ray-cluster.labels" . | nindent 10 }}
+        {{- end }} 
 
   workerGroupSpecs:
   {{- range $groupName, $values := .Values.additionalWorkerGroups }}
   {{- if ne $values.disabled true }}
   - rayStartParams:
-    {{- range $key, $val := $values.rayStartParams }}
-      {{ $key }}: {{ $val | quote }}
-    {{- end }}
-    {{- /*
-    initArgs is a deprecated alias for rayStartParams.
-    */}}
-    {{- range $key, $val := $values.initArgs }}
-      {{ $key }}: {{ $val | quote }}
+    {{- if and (not $values.rayStartParams) (not $values.initArgs) }}
+      {}
+    {{- else }}
+      {{- range $key, $val := $values.rayStartParams }}
+        {{ $key }}: {{ $val | quote }}
+      {{- end }}
+      {{- /*
+      initArgs is a deprecated alias for rayStartParams.
+      */}}
+      {{- range $key, $val := $values.initArgs }}
+        {{ $key }}: {{ $val | quote }}
+      {{- end }}
     {{- end }}
     replicas: {{ $values.replicas }}
     minReplicas: {{ $values.minReplicas | default (default 1 $values.miniReplicas) }}
@@ -84,12 +108,9 @@ spec:
     template:
       spec:
         imagePullSecrets: {{- toYaml $.Values.imagePullSecrets | nindent 10 }}
-        initContainers:
-          - name: init
-            image: {{ $values.initContainerImage | default "busybox:1.28" }}
-            command: ['sh', '-c', "until nslookup $RAY_IP.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for K8s Service $RAY_IP; sleep 2; done"]
-            securityContext:
-            {{- toYaml $values.initContainerSecurityContext | nindent 14 }}
+        {{- if $values.serviceAccountName }}
+        serviceAccountName: {{ $values.serviceAccountName }}
+        {{- end }}
         containers:
           - volumeMounts: {{- toYaml $values.volumeMounts | nindent 12 }}
             name: ray-worker
@@ -100,13 +121,19 @@ spec:
             {{- toYaml $values.securityContext | nindent 14 }}
             env:
             {{- toYaml $values.containerEnv | nindent 14}}
-            {{- with $values.envFrom }}
-            envFrom: {{- toYaml . | nindent 14}}
+            {{- if $values.envFrom }}
+            envFrom: {{- toYaml $values.envFrom | nindent 14 }}
             {{- end }}
             ports: {{- toYaml $values.ports | nindent 14}}
             {{- if $values.lifecycle }}
             lifecycle:
             {{- toYaml $values.lifecycle | nindent 14 }}
+            {{- end }}
+            {{- if $values.command }}
+            command: {{- toYaml $values.command | nindent 14}}
+            {{- end }}
+            {{- if $values.args }}
+            args: {{- toYaml $values.args | nindent 14}}
             {{- end }}
           {{- if $values.sidecarContainers }}
           {{- toYaml $values.sidecarContainers | nindent 10 }}
@@ -117,20 +144,29 @@ spec:
         nodeSelector: {{- toYaml $values.nodeSelector | nindent 10 }}
       metadata:
         annotations: {{- toYaml $values.annotations | nindent 10 }}
-        labels:
+        {{- if $values.labels }}
+        labels: {{- toYaml $values.labels | nindent 10 }}
 {{ include "ray-cluster.labels" $ | indent 10 }}
+        {{ else }}
+        labels: {{ include "ray-cluster.labels" $ | nindent 10 }}
+        {{- end }} 
+
   {{- end }}
   {{- end }}
   {{- if ne (.Values.worker.disabled | default false) true }}
   - rayStartParams:
-    {{- range $key, $val := .Values.worker.rayStartParams }}
-      {{ $key }}: {{ $val | quote }}
-    {{- end }}
-    {{- /*
-    initArgs is a deprecated alias for rayStartParams.
-    */}}
-    {{- range $key, $val := .Values.worker.initArgs }}
-      {{ $key }}: {{ $val | quote }}
+    {{- if and (not .Values.worker.rayStartParams) (not .Values.worker.initArgs) }}
+      {}
+    {{- else }}
+      {{- range $key, $val := .Values.worker.rayStartParams }}
+        {{ $key }}: {{ $val | quote }}
+      {{- end }}
+      {{- /*
+      initArgs is a deprecated alias for rayStartParams.
+      */}}
+      {{- range $key, $val := .Values.worker.initArgs }}
+        {{ $key }}: {{ $val | quote }}
+      {{- end }}
     {{- end }}
     replicas: {{ .Values.worker.replicas }}
     minReplicas: {{ .Values.worker.minReplicas | default (default 1 .Values.worker.miniReplicas) }}
@@ -139,12 +175,9 @@ spec:
     template:
       spec:
         imagePullSecrets: {{- toYaml .Values.imagePullSecrets | nindent 10 }}
-        initContainers:
-          - name: init
-            image: {{ .Values.worker.initContainerImage | default "busybox:1.28" }}
-            command: ['sh', '-c', "until nslookup $RAY_IP.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for K8s Service $RAY_IP; sleep 2; done"]
-            securityContext:
-            {{- toYaml .Values.worker.initContainerSecurityContext | nindent 14 }}
+        {{- if .Values.worker.serviceAccountName }}
+        serviceAccountName: {{ .Values.worker.serviceAccountName }}
+        {{- end }}
         containers:
           - volumeMounts: {{- toYaml .Values.worker.volumeMounts | nindent 12 }}
             name: ray-worker
@@ -163,6 +196,12 @@ spec:
             lifecycle:
             {{- toYaml .Values.worker.lifecycle | nindent 14 }}
             {{- end }}
+            {{- if .Values.worker.command }}
+            command: {{- toYaml .Values.worker.command | nindent 14}}
+            {{- end }}
+            {{- if .Values.worker.args }}
+            args: {{- toYaml .Values.worker.args | nindent 14}}
+            {{- end }}
           {{- if .Values.worker.sidecarContainers }}
           {{- toYaml .Values.worker.sidecarContainers | nindent 10 }}
           {{- end }}
@@ -172,6 +211,10 @@ spec:
         nodeSelector: {{- toYaml .Values.worker.nodeSelector | nindent 10 }}
       metadata:
         annotations: {{- toYaml .Values.worker.annotations | nindent 10 }}
-        labels:
+        {{- if .Values.worker.labels }}
+        labels: {{- toYaml .Values.worker.labels | nindent 10 }}
 {{ include "ray-cluster.labels" . | indent 10 }}
+        {{ else }}
+        labels: {{ include "ray-cluster.labels" $ | nindent 10 }}
+        {{- end }}
   {{- end }}

@@ -7,7 +7,7 @@ replicaCount: 1
 name: "kuberay-apiserver"
 image:
   repository: kuberay/apiserver
-  tag: v0.4.0
+  tag: v0.5.2
   pullPolicy: IfNotPresent
 
 ## Install Default RBAC roles and bindings
@@ -50,3 +50,6 @@ ingress:
   enabled: false
 
 rbacEnable: true
+
+# the chart can be installed by users with permissions to a single namespace only
+singleNamespaceInstall: false
