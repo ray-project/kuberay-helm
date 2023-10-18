@@ -1,4 +1,4 @@
-apiVersion: ray.io/v1alpha1
+apiVersion: ray.io/v1
 kind: RayCluster
 metadata:
   labels:
@@ -110,8 +110,8 @@ spec:
       {{- end }}
     {{- end }}
     replicas: {{ $values.replicas }}
-    minReplicas: {{ $values.minReplicas | default (default 0 $values.miniReplicas) }}
-    maxReplicas: {{ $values.maxReplicas | default (default 2147483647 $values.maxiReplicas) }}
+    minReplicas: {{ $values.minReplicas | default 0 }}
+    maxReplicas: {{ $values.maxReplicas | default 2147483647 }}
     groupName: {{ $groupName }}
     template:
       spec:
@@ -129,8 +129,8 @@ spec:
             image: {{ $values.image.repository }}:{{ $values.image.tag }}
             imagePullPolicy: {{ $values.image.pullPolicy }}
             {{- else }}
-            image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            image: {{ $.Values.image.repository }}:{{ $.Values.image.tag }}
+            imagePullPolicy: {{ $.Values.image.pullPolicy }}
             {{- end }}
             resources: {{- toYaml $values.resources | nindent 14 }}
             securityContext:
@@ -185,8 +185,8 @@ spec:
       {{- end }}
     {{- end }}
     replicas: {{ .Values.worker.replicas }}
-    minReplicas: {{ .Values.worker.minReplicas | default (default 0 .Values.worker.miniReplicas) }}
-    maxReplicas: {{ .Values.worker.maxReplicas | default (default 2147483647 .Values.worker.maxiReplicas) }}
+    minReplicas: {{ .Values.worker.minReplicas | default 0 }}
+    maxReplicas: {{ .Values.worker.maxReplicas | default 2147483647 }}
     groupName: {{ .Values.worker.groupName }}
     template:
       spec:
