@@ -1,5 +1,9 @@
 {{- if .Values.rbacEnable }}
-{{- if .Values.singleNamespaceInstall }}
+# when we are installing in a single namespace, just iterate over a list of [.Release.Namespace] so we don't have to repeat the body of the rules in a different file
+{{- $watchNamespaces := ternary (default (list .Release.Namespace) .Values.watchNamespace) (list .Release.Namespace) .Values.singleNamespaceInstall }}
+{{- range $namespace := $watchNamespaces }}
+---
+{{- if $.Values.singleNamespaceInstall }}
 kind: RoleBinding
 {{- else }}
 kind: ClusterRoleBinding
@@ -7,18 +11,20 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   labels:
-{{ include "kuberay-apiserver.labels" . | indent 4 }}
-  name: {{ include "kuberay-apiserver.fullname" . }}
+{{ include "kuberay-apiserver.labels" $ | indent 4 }}
+  name: {{ include "kuberay-apiserver.fullname" $ }}
+  namespace: {{ $namespace }}
 subjects:
 - kind: ServiceAccount
-  name: {{ .Values.serviceAccount.name  }}
-  namespace: {{ .Release.Namespace }}
+  name: {{ $.Values.serviceAccount.name  }}
+  namespace: {{ $.Release.Namespace }}
 roleRef:
-  {{- if .Values.singleNamespaceInstall }}
+  {{- if $.Values.singleNamespaceInstall }}
   kind: Role
   {{- else }}
   kind: ClusterRole
   {{- end }}
-  name: {{ include "kuberay-apiserver.fullname" . }}
+  name: {{ include "kuberay-apiserver.fullname" $ }}
   apiGroup: rbac.authorization.k8s.io
+{{- end }}
 {{- end }}

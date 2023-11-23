@@ -1,15 +1,19 @@
-
 {{- if .Values.rbacEnable }}
+# when we are installing in a single namespace, just iterate over a list of [.Release.Namespace] so we don't have to repeat the body of the rules in a different file
+{{- $watchNamespaces := ternary (default (list .Release.Namespace) .Values.watchNamespace) (list .Release.Namespace) .Values.singleNamespaceInstall }}
+{{- range $namespace := $watchNamespaces }}
+---
 apiVersion: rbac.authorization.k8s.io/v1
-{{- if .Values.singleNamespaceInstall }}
+{{- if $.Values.singleNamespaceInstall }}
 kind: Role
 {{- else }}
 kind: ClusterRole
 {{- end }}
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Values.name }}
-  name: {{ .Values.name }}
+    app.kubernetes.io/name: {{ $.Values.name }}
+  name: {{ $.Values.name }}
+  namespace: {{ $namespace }}
 rules:
 - apiGroups:
   - ray.io
@@ -50,4 +54,5 @@ rules:
   verbs:
   - get
   - list
+{{- end }}
 {{- end }}
