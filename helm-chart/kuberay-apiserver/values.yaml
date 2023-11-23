@@ -72,5 +72,14 @@ route:
 
 rbacEnable: true
 
-# the chart can be installed by users with permissions to a single namespace only
+# When singleNamespaceInstall is true:
+# - Install namespaced RBAC resources such as Role and RoleBinding instead of cluster-scoped ones like ClusterRole and ClusterRoleBinding so that
+#   the chart can be installed by users with permissions restricted to a single namespace.
+# - If "watchNamespace" is not set, the KubeRay apiserver will, by default, only able to view resources within its own namespace.
 singleNamespaceInstall: false
+
+# You can set watchNamespace to a list of namespaces that KubeRay apiserver should have permission to list CRDs for
+# if singleNamespaceInstall is false, this setting is ignored
+# watchNamespace:
+#   - n1
+#   - n2
