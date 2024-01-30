@@ -4,7 +4,7 @@
 
 image:
   repository: kuberay/operator
-  tag: v1.0.0
+  tag: v1.1.0-alpha.0
   pullPolicy: IfNotPresent
 
 nameOverride: "kuberay-operator"
@@ -104,4 +104,9 @@ env:
 # For LLM serving, some users might not have sufficient GPU resources to run two RayClusters simultaneously.
 # Therefore, KubeRay offers ENABLE_ZERO_DOWNTIME as a feature flag for zero-downtime upgrades.
 # - name: ENABLE_ZERO_DOWNTIME
+#   value: "true"
+# This environment variable for the KubeRay operator is used to determine whether to enable
+# the injection of readiness and liveness probes into Ray head and worker containers.
+# Enabling this feature contributes to the robustness of Ray clusters.
+# - name: ENABLE_PROBES_INJECTION
 #   value: "true"
