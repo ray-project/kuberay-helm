@@ -2,6 +2,15 @@ apiVersion: v1
 entries:
   kuberay-apiserver:
   - apiVersion: v2
+    created: "2024-03-15T23:51:22.874360922Z"
+    description: A Helm chart for kuberay-apiserver
+    digest: 56de4e9c57d3e29bcb8501657cd181528974ed000dab19588df5237e97fee2fb
+    name: kuberay-apiserver
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-1.1.0-rc.1/kuberay-apiserver-1.1.0-rc.1.tgz
+    version: 1.1.0-rc.1
+  - apiVersion: v2
     created: "2024-03-02T07:33:46.032889731Z"
     description: A Helm chart for kuberay-apiserver
     digest: c7777d3b6f37b3e1005775d073b57de7bc9182339d2fa86d8872fb6e4172f172
@@ -147,6 +156,16 @@ entries:
     - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0-rc.0/kuberay-apiserver-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
   kuberay-operator:
+  - apiVersion: v2
+    created: "2024-03-15T23:51:23.013785608Z"
+    description: A Helm chart for Kubernetes
+    digest: 5ea2d6545c2aebecaf0df0f52bd9e1d5967fb730f4bfea88e1d10c3e5370b74a
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: kuberay-operator
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-1.1.0-rc.1/kuberay-operator-1.1.0-rc.1.tgz
+    version: 1.1.0-rc.1
   - apiVersion: v2
     created: "2024-03-02T07:33:46.155550564Z"
     description: A Helm chart for Kubernetes
@@ -310,6 +329,15 @@ entries:
     version: 0.4.0-rc.0
   ray-cluster:
   - apiVersion: v1
+    created: "2024-03-15T23:51:23.130280092Z"
+    description: A Helm chart for Kubernetes
+    digest: 53c670c6ab189cc161563beb640dc1685ab180eb18735265f4a4dc8c3e18ca3b
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: ray-cluster
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-1.1.0-rc.1/ray-cluster-1.1.0-rc.1.tgz
+    version: 1.1.0-rc.1
+  - apiVersion: v1
     created: "2024-03-02T07:33:46.262787545Z"
     description: A Helm chart for Kubernetes
     digest: d1c367bdb029863e09dc6d0d1b637d347cc5a3bb23e14505c3c594e7f2aa3f54
@@ -454,4 +482,4 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0-rc.0/ray-cluster-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
-generated: "2024-03-02T07:33:46.263383905Z"
+generated: "2024-03-15T23:51:23.130570304Z"
