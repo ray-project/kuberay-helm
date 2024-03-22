@@ -4,7 +4,7 @@
 
 image:
   repository: quay.io/kuberay/operator
-  tag: v1.1.0-rc.1
+  tag: v1.1.0
   pullPolicy: IfNotPresent
 
 nameOverride: "kuberay-operator"
@@ -67,6 +67,8 @@ securityContext:
     drop:
     - ALL
   runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
 
 
 # If rbacEnable is set to false, no RBAC resources will be created, including the Role for leader election, the Role for Pods and Services, and so on.
