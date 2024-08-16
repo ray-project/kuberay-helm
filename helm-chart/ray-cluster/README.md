@@ -10,23 +10,23 @@ See [kuberay-operator/README.md](https://github.com/ray-project/kuberay/blob/mas
 ## End-to-end example
 
 ```sh
-# Step 1: Create a KinD cluster 
+# Step 1: Create a KinD cluster
 kind create cluster
 
 # Step 2: Register a Helm chart repo
 helm repo add kuberay https://ray-project.github.io/kuberay-helm/
 
-# Step 3: Install both CRDs and KubeRay operator v1.0.0.
-helm install kuberay-operator kuberay/kuberay-operator --version 1.0.0
+# Step 3: Install both CRDs and KubeRay operator v1.1.0.
+helm install kuberay-operator kuberay/kuberay-operator --version 1.1.0
 
 # Step 4: Install a RayCluster custom resource
 # (For x86_64 users)
-helm install raycluster kuberay/ray-cluster --version 1.0.0
+helm install raycluster kuberay/ray-cluster --version 1.1.0
 # (For arm64 users, e.g. Mac M1)
 # See here for all available arm64 images: https://hub.docker.com/r/rayproject/ray/tags?page=1&name=aarch64
-helm install raycluster kuberay/ray-cluster --version 1.0.0 --set image.tag=nightly-aarch64
+helm install raycluster kuberay/ray-cluster --version 1.1.0 --set image.tag=nightly-aarch64
 
-# Step 5: Verify the installation of KubeRay operator and RayCluster 
+# Step 5: Verify the installation of KubeRay operator and RayCluster
 kubectl get pods
 # NAME                                          READY   STATUS    RESTARTS   AGE
 # kuberay-operator-6fcbb94f64-gkpc9             1/1     Running   0          89s
@@ -34,15 +34,15 @@ kubectl get pods
 # raycluster-kuberay-worker-workergroup-2jckt   1/1     Running   0          66s
 
 # Step 6: Forward the port of Dashboard
-kubectl port-forward --address 0.0.0.0 svc/raycluster-kuberay-head-svc 8265:8265
+kubectl port-forward svc/raycluster-kuberay-head-svc 8265:8265
 
-# Step 7: Check ${YOUR_IP}:8265 for the Dashboard (e.g. 127.0.0.1:8265)
+# Step 7: Check 127.0.0.1:8265 for the Dashboard
 
 # Step 8: Log in to Ray head Pod and execute a job.
 kubectl exec -it ${RAYCLUSTER_HEAD_POD} -- bash
 python -c "import ray; ray.init(); print(ray.cluster_resources())" # (in Ray head Pod)
 
-# Step 9: Check ${YOUR_IP}:8265/#/job. The status of the job should be "SUCCEEDED".
+# Step 9: Check 127.0.0.1:8265/#/job. The status of the job should be "SUCCEEDED".
 
 # Step 10: Uninstall RayCluster
 helm uninstall raycluster

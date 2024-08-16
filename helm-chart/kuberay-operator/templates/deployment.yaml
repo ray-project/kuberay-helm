@@ -56,6 +56,7 @@ spec:
             - /manager
           args:
             {{- $argList := list -}}
+            {{- $argList = append $argList (include "kuberay.featureGates" . | trim) -}}
             {{- if .Values.batchScheduler.enabled -}}
             {{- $argList = append $argList "--enable-batch-scheduler" -}}
             {{- end -}}
@@ -81,13 +82,16 @@ spec:
             {{- $argList = append $argList "--log-file-encoder" -}}
             {{- $argList = append $argList .Values.logging.fileEncoder -}}
             {{- end -}}
+            {{- if hasKey .Values "leaderElectionEnabled" -}}
+            {{- $argList = append $argList (printf "--enable-leader-election=%t" .Values.leaderElectionEnabled) -}}
+            {{- end -}}
             {{- (printf "\n") -}}
             {{- $argList | toYaml | indent 12 }}
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
-          env: 
+          env:
           {{- toYaml .Values.env | nindent 12}}
           livenessProbe:
             httpGet:
