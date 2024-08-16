@@ -7,7 +7,7 @@
 
 image:
   repository: rayproject/ray
-  tag: 2.9.0
+  tag: 2.34.0
   pullPolicy: IfNotPresent
 
 nameOverride: "kuberay"
@@ -20,13 +20,13 @@ imagePullSecrets: []
 common:
   # containerEnv specifies environment variables for the Ray head and worker containers.
   # Follows standard K8s container env schema.
-  containerEnv: {}
+  containerEnv: []
   #  - name: BLAH
   #    value: VAL
 head:
   # rayVersion determines the autoscaler's image version.
   # It should match the Ray version in the image of the containers.
-  # rayVersion: 2.9.0
+  # rayVersion: 2.34.0
   # If enableInTreeAutoscaling is true, the autoscaler sidecar will be added to the Ray head pod.
   # Ray autoscaler integration is supported only for Ray versions >= 1.11.0
   # Ray autoscaler integration is Beta with KubeRay >= 0.3.0 and Ray >= 2.0.0.
@@ -56,6 +56,7 @@ head:
   # Note: From KubeRay v0.6.0, users need to create the ServiceAccount by themselves if they specify the `serviceAccountName`
   # in the headGroupSpec. See https://github.com/ray-project/kuberay/pull/1128 for more details.
   serviceAccountName: ""
+  restartPolicy: ""
   rayStartParams:
     dashboard-host: '0.0.0.0'
   # containerEnv specifies environment variables for the Ray container,
@@ -89,6 +90,8 @@ head:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  # Pod security context.
+  podSecurityContext: {}
   # Ray container security context.
   securityContext: {}
   # Optional: The following volumes/volumeMounts configurations are optional but recommended because
@@ -124,6 +127,7 @@ worker:
   maxReplicas: 3
   labels: {}
   serviceAccountName: ""
+  restartPolicy: ""
   rayStartParams: {}
   # containerEnv specifies environment variables for the Ray container,
   # Follows standard K8s container env schema.
@@ -155,6 +159,8 @@ worker:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  # Pod security context.
+  podSecurityContext: {}
   # Ray container security context.
   securityContext: {}
   # Optional: The following volumes/volumeMounts configurations are optional but recommended because
@@ -185,6 +191,7 @@ additionalWorkerGroups:
     maxReplicas: 3
     labels: {}
     serviceAccountName: ""
+    restartPolicy: ""
     rayStartParams: {}
     # containerEnv specifies environment variables for the Ray container,
     # Follows standard K8s container env schema.
@@ -216,6 +223,8 @@ additionalWorkerGroups:
     nodeSelector: {}
     tolerations: []
     affinity: {}
+    # Pod security context.
+    podSecurityContext: {}
     # Ray container security context.
     securityContext: {}
     # Optional: The following volumes/volumeMounts configurations are optional but recommended because
