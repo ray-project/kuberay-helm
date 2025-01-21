@@ -38,6 +38,8 @@ spec:
               deploymentUnhealthySecondThreshold:
                 format: int32
                 type: integer
+              excludeHeadPodFromServeSvc:
+                type: boolean
               rayClusterConfig:
                 properties:
                   autoscalerOptions:
@@ -274,6 +276,135 @@ spec:
                     type: object
                   enableInTreeAutoscaling:
                     type: boolean
+                  gcsFaultToleranceOptions:
+                    properties:
+                      externalStorageNamespace:
+                        type: string
+                      redisAddress:
+                        type: string
+                      redisPassword:
+                        properties:
+                          value:
+                            type: string
+                          valueFrom:
+                            properties:
+                              configMapKeyRef:
+                                properties:
+                                  key:
+                                    type: string
+                                  name:
+                                    default: ""
+                                    type: string
+                                  optional:
+                                    type: boolean
+                                required:
+                                - key
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              fieldRef:
+                                properties:
+                                  apiVersion:
+                                    type: string
+                                  fieldPath:
+                                    type: string
+                                required:
+                                - fieldPath
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              resourceFieldRef:
+                                properties:
+                                  containerName:
+                                    type: string
+                                  divisor:
+                                    anyOf:
+                                    - type: integer
+                                    - type: string
+                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                    x-kubernetes-int-or-string: true
+                                  resource:
+                                    type: string
+                                required:
+                                - resource
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              secretKeyRef:
+                                properties:
+                                  key:
+                                    type: string
+                                  name:
+                                    default: ""
+                                    type: string
+                                  optional:
+                                    type: boolean
+                                required:
+                                - key
+                                type: object
+                                x-kubernetes-map-type: atomic
+                            type: object
+                        type: object
+                      redisUsername:
+                        properties:
+                          value:
+                            type: string
+                          valueFrom:
+                            properties:
+                              configMapKeyRef:
+                                properties:
+                                  key:
+                                    type: string
+                                  name:
+                                    default: ""
+                                    type: string
+                                  optional:
+                                    type: boolean
+                                required:
+                                - key
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              fieldRef:
+                                properties:
+                                  apiVersion:
+                                    type: string
+                                  fieldPath:
+                                    type: string
+                                required:
+                                - fieldPath
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              resourceFieldRef:
+                                properties:
+                                  containerName:
+                                    type: string
+                                  divisor:
+                                    anyOf:
+                                    - type: integer
+                                    - type: string
+                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                    x-kubernetes-int-or-string: true
+                                  resource:
+                                    type: string
+                                required:
+                                - resource
+                                type: object
+                                x-kubernetes-map-type: atomic
+                              secretKeyRef:
+                                properties:
+                                  key:
+                                    type: string
+                                  name:
+                                    default: ""
+                                    type: string
+                                  optional:
+                                    type: boolean
+                                required:
+                                - key
+                                type: object
+                                x-kubernetes-map-type: atomic
+                            type: object
+                        type: object
+                    required:
+                    - redisAddress
+                    type: object
                   headGroupSpec:
                     properties:
                       enableIngress:
@@ -4085,6 +4216,14 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
+                  managedBy:
+                    type: string
+                    x-kubernetes-validations:
+                    - message: the managedBy field is immutable
+                      rule: self == oldSelf
+                    - message: the managedBy field value must be either 'ray.io/kuberay-operator'
+                        or 'kueue.x-k8s.io/multikueue'
+                      rule: self in ['ray.io/kuberay-operator', 'kueue.x-k8s.io/multikueue']
                   rayVersion:
                     type: string
                   suspend:
@@ -4094,6 +4233,9 @@ spec:
                       properties:
                         groupName:
                           type: string
+                        idleTimeoutSeconds:
+                          format: int32
+                          type: integer
                         maxReplicas:
                           default: 2147483647
                           format: int32
@@ -4121,6 +4263,8 @@ spec:
                                 type: string
                               type: array
                           type: object
+                        suspend:
+                          type: boolean
                         template:
                           properties:
                             metadata:
@@ -7930,6 +8074,11 @@ spec:
               serviceUnhealthySecondThreshold:
                 format: int32
                 type: integer
+              upgradeStrategy:
+                properties:
+                  type:
+                    type: string
+                type: object
             type: object
           status:
             properties:
