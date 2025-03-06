@@ -32,7 +32,60 @@ jobs:
         # Run 'helm lint', version checking, YAML schema validation on 'Chart.yaml',
         # YAML linting on 'Chart.yaml' and 'values.yaml', and maintainer.
         # [Doc]: https://github.com/helm/chart-testing/blob/main/doc/ct_lint.md
-        run: ct lint --all --chart-dirs helm-chart/ --validate-maintainers=false
+        run: ct lint --all --config ct-config.yaml
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --config ct-config.yaml)
+          if [[ -n "$changed" ]]; then
+            echo "::set-output name=changed::true"
+          fi
+
+      # Refer to https://github.com/kubernetes-sigs/kind/releases when updating the node_images
+      - name: Create 1.29 kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          node_image: kindest/node:v1.29.14@sha256:8703bd94ee24e51b778d5556ae310c6c0fa67d761fae6379c8e0bb480e6fea29
+          cluster_name: kubernetes-1.29
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install) against 1.29
+        run: ct install --all --config ct-config.yaml
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Create 1.30 kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          node_image: kindest/node:v1.30.10@sha256:4de75d0e82481ea846c0ed1de86328d821c1e6a6a91ac37bf804e5313670e507
+          cluster_name: kubernetes-1.30
+        if: steps.list-changed.outputs.changed == 'true'
+      
+      - name: Run chart-testing (install) against 1.30
+        run: ct install --config .ci/ct-config.yaml
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Create 1.31 kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          node_image: kindest/node:v1.31.6@sha256:28b7cbb993dfe093c76641a0c95807637213c9109b761f1d422c2400e22b8e87
+          cluster_name: kubernetes-1.31
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install) against 1.31
+        run: ct install --config .ci/ct-config.yaml
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Create 1.32 kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          node_image: kindest/node:v1.32.2@sha256:f226345927d7e348497136874b6d207e0b32cc52154ad8323129352923a3142f
+          cluster_name: kubernetes-1.32
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install) against 1.32
+        run: ct install --config .ci/ct-config.yaml
+        if: steps.list-changed.outputs.changed == 'true'
 
   lint-test-helm-3-9:
     runs-on: ubuntu-22.04
@@ -58,4 +111,57 @@ jobs:
         # Run 'helm lint', version checking, YAML schema validation on 'Chart.yaml',
         # YAML linting on 'Chart.yaml' and 'values.yaml', and maintainer.
         # [Doc]: https://github.com/helm/chart-testing/blob/main/doc/ct_lint.md
-        run: ct lint --all --chart-dirs helm-chart/ --validate-maintainers=false
+        run: ct lint --all --config ct-config.yaml
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --config ct-config.yaml)
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Refer to https://github.com/kubernetes-sigs/kind/releases when updating the node_images
+      - name: Create 1.29 kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          node_image: kindest/node:v1.29.14@sha256:8703bd94ee24e51b778d5556ae310c6c0fa67d761fae6379c8e0bb480e6fea29
+          cluster_name: kubernetes-1.29
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install) against 1.29
+        run: ct install --all --config ct-config.yaml
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Create 1.30 kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          node_image: kindest/node:v1.30.10@sha256:4de75d0e82481ea846c0ed1de86328d821c1e6a6a91ac37bf804e5313670e507
+          cluster_name: kubernetes-1.30
+        if: steps.list-changed.outputs.changed == 'true'
+      
+      - name: Run chart-testing (install) against 1.30
+        run: ct install --config .ci/ct-config.yaml
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Create 1.31 kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          node_image: kindest/node:v1.31.6@sha256:28b7cbb993dfe093c76641a0c95807637213c9109b761f1d422c2400e22b8e87
+          cluster_name: kubernetes-1.31
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install) against 1.31
+        run: ct install --config .ci/ct-config.yaml
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Create 1.32 kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          node_image: kindest/node:v1.32.2@sha256:f226345927d7e348497136874b6d207e0b32cc52154ad8323129352923a3142f
+          cluster_name: kubernetes-1.32
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install) against 1.32
+        run: ct install --config .ci/ct-config.yaml
+        if: steps.list-changed.outputs.changed == 'true'
