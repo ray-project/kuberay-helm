@@ -58,4 +58,23 @@ jobs:
         # Run 'helm lint', version checking, YAML schema validation on 'Chart.yaml',
         # YAML linting on 'Chart.yaml' and 'values.yaml', and maintainer.
         # [Doc]: https://github.com/helm/chart-testing/blob/main/doc/ct_lint.md
-        run: ct lint --all --chart-dirs helm-chart/ --validate-maintainers=false
+        run: ct lint --all --config ct-config.yaml
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --all --config ct-config.yaml)
+          if [[ -n "$changed" ]]; then
+            echo "::set-output name=changed::true"
+          fi
+
+      # Refer to https://github.com/kubernetes-sigs/kind/releases when updating the node_images
+      - name: Create 1.29 kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          node_image: kindest/node:v1.29.14@sha256:8703bd94ee24e51b778d5556ae310c6c0fa67d761fae6379c8e0bb480e6fea29
+          cluster_name: kubernetes-1.29
+        if: steps.list-changed.outputs.changed == 'true'
+
+      - name: Run chart-testing (install) against 1.29
+        run: ct install --all --config ct-config.yaml
