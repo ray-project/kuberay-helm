@@ -2,6 +2,15 @@ apiVersion: v1
 entries:
   kuberay-apiserver:
   - apiVersion: v2
+    created: "2025-04-07T01:04:40.988044498Z"
+    description: A Helm chart for kuberay-apiserver
+    digest: e7c5e5c9dab7379c39b23ce44e71ffde232f917c9d4468f04cafa5618061aff7
+    name: kuberay-apiserver
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-1.3.2/kuberay-apiserver-1.3.2.tgz
+    version: 1.3.2
+  - apiVersion: v2
     created: "2025-03-18T21:48:54.89520389Z"
     description: A Helm chart for kuberay-apiserver
     digest: 5be9f4042fda9625ac169feb6836d1d5c0da5580989c730fa4ca8984c1a0395e
@@ -264,6 +273,16 @@ entries:
     - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0-rc.0/kuberay-apiserver-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
   kuberay-operator:
+  - apiVersion: v2
+    created: "2025-04-07T01:04:41.085058213Z"
+    description: A Helm chart for Kubernetes
+    digest: 2d153d1935da7684a2ba70ee50a0594a858c07ed9711fd164bf658f9180ea22b
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: kuberay-operator
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-1.3.2/kuberay-operator-1.3.2.tgz
+    version: 1.3.2
   - apiVersion: v2
     created: "2025-03-18T21:48:55.01620421Z"
     description: A Helm chart for Kubernetes
@@ -557,6 +576,15 @@ entries:
     version: 0.4.0-rc.0
   ray-cluster:
   - apiVersion: v1
+    created: "2025-04-07T01:04:41.175822561Z"
+    description: A Helm chart for Kubernetes
+    digest: fe3ecdab0ddecab7cdb6a741d5916c41b2676b219afe5bfd1aa55844037b7cd3
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: ray-cluster
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-1.3.2/ray-cluster-1.3.2.tgz
+    version: 1.3.2
+  - apiVersion: v1
     created: "2025-03-18T21:48:55.168285175Z"
     description: A Helm chart for Kubernetes
     digest: 56095b0786b2e15098cbe442c626064d1a23ab442bac6d07b5ef58291276c436
@@ -818,4 +846,4 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0-rc.0/ray-cluster-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
-generated: "2025-03-18T21:48:55.169045624Z"
+generated: "2025-04-07T01:04:41.177010765Z"
