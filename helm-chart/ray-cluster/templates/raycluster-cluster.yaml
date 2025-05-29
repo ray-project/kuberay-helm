@@ -92,7 +92,7 @@ spec:
         {{ if .Values.head.volumes }}
         volumes: {{- toYaml .Values.head.volumes | nindent 10 }}
         {{- end }}
-        {{- if .Values.head.topologySpreadConstraints.enabled }}
+        {{- if .Values.head.topologySpreadConstraints }}
         topologySpreadConstraints: {{- toYaml .Values.head.topologySpreadConstraints | nindent 10 }}
         {{- end }}
         affinity: {{- toYaml .Values.head.affinity | nindent 10 }}
@@ -297,6 +297,9 @@ spec:
           {{- end }}
         {{ if .Values.worker.volumes }}
         volumes: {{- toYaml .Values.worker.volumes | nindent 10 }}
+        {{- end }}
+        {{- if .Values.worker.topologySpreadConstraints }}
+        topologySpreadConstraints: {{- toYaml .Values.worker.topologySpreadConstraints | nindent 10 }}
         {{- end }}
         affinity: {{- toYaml .Values.worker.affinity | nindent 10 }}
         {{ if .Values.worker.priorityClassName }}
