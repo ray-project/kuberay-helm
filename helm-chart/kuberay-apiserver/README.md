@@ -21,7 +21,7 @@ helm version
 helm repo add kuberay https://ray-project.github.io/kuberay-helm/
 helm repo update
 # Install KubeRay APIServer without security proxy
-helm install kuberay-apiserver kuberay/kuberay-apiserver --version 1.4.0 --set security=null
+helm install kuberay-apiserver kuberay/kuberay-apiserver --version 1.4.1 --set security=null
 ```
 
 - Install the nightly version
@@ -44,7 +44,7 @@ helm install kuberay-apiserver . --set security=null
 helm repo add kuberay https://ray-project.github.io/kuberay-helm/
 helm repo update
 # Install KubeRay APIServer
-helm install kuberay-apiserver kuberay/kuberay-apiserver --version 1.4.0
+helm install kuberay-apiserver kuberay/kuberay-apiserver --version 1.4.1
 ```
 
 - Install the nightly version
