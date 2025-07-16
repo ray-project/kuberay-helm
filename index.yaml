@@ -2,6 +2,15 @@ apiVersion: v1
 entries:
   kuberay-apiserver:
   - apiVersion: v2
+    created: "2025-07-16T23:37:13.620580655Z"
+    description: A Helm chart for kuberay-apiserver
+    digest: 5d6470db43e992b11b52ff30a2ec14af379a39639389036bb9898de1b4981224
+    name: kuberay-apiserver
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-1.4.2/kuberay-apiserver-1.4.2.tgz
+    version: 1.4.2
+  - apiVersion: v2
     created: "2025-07-07T20:14:52.38326769Z"
     description: A Helm chart for kuberay-apiserver
     digest: 04180ea95661ece71750bdb8a69a39553324a68ccbdd4d3967ee9acc1f17faa9
@@ -318,6 +327,27 @@ entries:
     - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-0.4.0-rc.0/kuberay-apiserver-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
   kuberay-operator:
+  - apiVersion: v2
+    created: "2025-07-16T23:37:13.763868925Z"
+    description: A Helm chart for deploying the Kuberay operator on Kubernetes.
+    digest: 4a36c3c08dd799d3384f50f3744183dd7c89cf4f1540ea93450acaacf557562b
+    home: https://github.com/ray-project/kuberay
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    keywords:
+    - ray
+    - ray operator
+    - distributed computing
+    - data processing
+    - machine learning
+    - deep learning
+    - hyperparameter tuning
+    - reinforcement learning
+    - model serving
+    name: kuberay-operator
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-1.4.2/kuberay-operator-1.4.2.tgz
+    version: 1.4.2
   - apiVersion: v2
     created: "2025-07-07T20:14:52.540227706Z"
     description: A Helm chart for deploying the Kuberay operator on Kubernetes.
@@ -726,6 +756,15 @@ entries:
     version: 0.4.0-rc.0
   ray-cluster:
   - apiVersion: v1
+    created: "2025-07-16T23:37:13.86943045Z"
+    description: A Helm chart for Kubernetes
+    digest: 771c8c99dbc5787800c9787227d39ed227ffe797435d5f24d431d653b0b3b7bf
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: ray-cluster
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-1.4.2/ray-cluster-1.4.2.tgz
+    version: 1.4.2
+  - apiVersion: v1
     created: "2025-07-07T20:14:52.679723482Z"
     description: A Helm chart for Kubernetes
     digest: 30e86157793f7548f56f99409e2f254e2b8ecc039d4f241559c2f62ed11ac382
@@ -1041,4 +1080,4 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0-rc.0/ray-cluster-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
-generated: "2025-07-07T20:14:52.680702093Z"
+generated: "2025-07-16T23:37:13.870539757Z"
