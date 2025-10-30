@@ -166,6 +166,12 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - pods/resize
+  verbs:
+  - patch
+- apiGroups:
+  - ""
+  resources:
   - serviceaccounts
   verbs:
   - create
@@ -214,6 +220,17 @@ rules:
   - get
   - list
   - patch
+  - update
+  - watch
+- apiGroups:
+  - gateway.networking.k8s.io
+  resources:
+  - gateways
+  - httproutes
+  verbs:
+  - create
+  - get
+  - list
   - update
   - watch
 - apiGroups:
@@ -301,12 +318,6 @@ rules:
   - list
   - update
   - watch
-- apiGroups:
-  - apiextensions.k8s.io
-  resources:
-  - customresourcedefinitions
-  verbs:
-  - get
 {{- end -}}
 {{- if or .batchSchedulerEnabled (eq .batchSchedulerName "scheduler-plugins") }}
 - apiGroups:
