@@ -232,6 +232,15 @@ tests:
           path: spec.headGroupSpec.template.metadata.annotations.key2
           value: value2
 
+  - it: Should set runtimeClassName when `head.runtimeClassName` is set
+    set:
+      head:
+        runtimeClassName: test-runtime-class
+    asserts:
+      - equal:
+          path: spec.headGroupSpec.template.spec.runtimeClassName
+          value: test-runtime-class
+
   - it: Should add init containers if `head.initContainers` is set
     set:
       head:
@@ -878,6 +887,15 @@ tests:
       - equal:
           path: spec.workerGroupSpecs[?(@.groupName=="workergroup")].template.metadata.annotations.key2
           value: value2
+
+  - it: Should set runtimeClassName when `worker.runtimeClassName` is set
+    set:
+      worker:
+        runtimeClassName: test-runtime-class
+    asserts:
+      - equal:
+          path: spec.workerGroupSpecs[?(@.groupName=="workergroup")].template.spec.runtimeClassName
+          value: test-runtime-class
 
   - it: Should add init containers if `worker.initContainers` is set
     set:

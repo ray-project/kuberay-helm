@@ -66,6 +66,9 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
       spec:
+        {{ with .Values.head.runtimeClassName }}
+        runtimeClassName: {{ . | quote }}
+        {{- end }}
         {{- with .Values.head.initContainers }}
         initContainers:
         {{- toYaml . | nindent 8 }}
@@ -192,6 +195,9 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
       spec:
+        {{ with .Values.worker.runtimeClassName }}
+        runtimeClassName: {{ . | quote }}
+        {{- end }}
         {{- with .Values.worker.initContainers }}
         initContainers:
         {{- toYaml . | nindent 8 }}
