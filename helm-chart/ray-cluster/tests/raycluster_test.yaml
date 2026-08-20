@@ -19,11 +19,11 @@ tests:
   - it: Should set Ray version when `head.rayVersion` is set
     set:
       head:
-        rayVersion: 2.46.0
+        rayVersion: 2.52.0
     asserts:
       - equal:
           path: spec.rayVersion
-          value: 2.46.0
+          value: 2.52.0
 
   - it: Should enable in-tree auto scaling when `head.enableInTreeAutoscaling` is `true`
     set:
@@ -96,6 +96,33 @@ tests:
               runAsNonRoot: true
               seccompProfile:
                 type: RuntimeDefault
+
+  - it: Should add GCS fault tolerance options when `gcsFaultTolerance.enabled` is `true`
+    set:
+      gcsFaultTolerance:
+        enabled: true
+        redisAddress: "test-redis:6379"
+        externalStorageNamespace: "test-gcs-namespace"
+        redisPassword:
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: password
+        redisUsername:
+          value: "test-user"
+    asserts:
+      - equal:
+          path: spec.gcsFaultToleranceOptions
+          value:
+            redisAddress: "test-redis:6379"
+            externalStorageNamespace: "test-gcs-namespace"
+            redisPassword:
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: password
+            redisUsername:
+              value: "test-user"
 
   # ===========================================================================
   # Test Head Group
@@ -772,6 +799,19 @@ tests:
           path: spec.headGroupSpec.template.spec.securityContext.fsGroup
           value: 3000
 
+  - it: Should add resource claims if `head.resourceClaims` is set
+    set:
+      head:
+        resourceClaims:
+          - name: gpu
+            resourceClaimName: gpu-claim
+    asserts:
+      - equal:
+          path: spec.headGroupSpec.template.spec.resourceClaims
+          value:
+            - name: gpu
+              resourceClaimName: gpu-claim
+
   # ===========================================================================
   # Test Default Worker Group
   # ===========================================================================
@@ -1419,6 +1459,19 @@ tests:
           path: spec.workerGroupSpecs[?(@.groupName=="workergroup")].template.spec.securityContext.fsGroup
           value: 3000
 
+  - it: Should add resource claims if `worker.resourceClaims` is set
+    set:
+      worker:
+        resourceClaims:
+          - name: gpu
+            resourceClaimName: gpu-claim
+    asserts:
+      - equal:
+          path: spec.workerGroupSpecs[?(@.groupName=="workergroup")].template.spec.resourceClaims
+          value:
+            - name: gpu
+              resourceClaimName: gpu-claim
+
   # ===========================================================================
   # Test Additional Worker Groups
   # ===========================================================================
@@ -1789,6 +1842,23 @@ tests:
               memory: 128Mi
               cpu: 500m
 
+  - it: Should add default resources if `additionalWorkerGroups.smallGroup.resources` is not set
+    set:
+      additionalWorkerGroups:
+        smallGroup:
+          disabled: false
+          resources: null
+    asserts:
+      - equal:
+          path: spec.workerGroupSpecs[?(@.groupName=="smallGroup")].template.spec.containers[?(@.name=="ray-worker")].resources
+          value:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: "1"
+              memory: 1Gi
+
   - it: Should add lifecycle if `additionalWorkerGroups.smallGroup.lifecycle` is set
     set:
       additionalWorkerGroups:
@@ -2126,3 +2196,47 @@ tests:
       - equal:
           path: spec.workerGroupSpecs[?(@.groupName=="smallGroup")].template.spec.securityContext.fsGroup
           value: 3000
+
+  - it: Should add resource claims if `additionalWorkerGroups.smallGroup.resourceClaims` is set
+    set:
+      additionalWorkerGroups:
+        smallGroup:
+          disabled: false
+          resourceClaims:
+            - name: gpu
+              resourceClaimName: gpu-claim
+    asserts:
+      - equal:
+          path: spec.workerGroupSpecs[?(@.groupName=="smallGroup")].template.spec.resourceClaims
+          value:
+            - name: gpu
+              resourceClaimName: gpu-claim
+
+  - it: Should set head runtimeClassName when `head.runtimeClassName` is set
+    set:
+      head:
+        runtimeClassName: nvidia
+    asserts:
+      - equal:
+          path: spec.headGroupSpec.template.spec.runtimeClassName
+          value: nvidia
+
+  - it: Should set worker runtimeClassName when `worker.runtimeClassName` is set
+    set:
+      worker:
+        runtimeClassName: nvidia
+    asserts:
+      - equal:
+          path: spec.workerGroupSpecs[?(@.groupName=="workergroup")].template.spec.runtimeClassName
+          value: nvidia
+
+  - it: Should set additional worker group runtimeClassName when `additionalWorkerGroups.smallGroup.runtimeClassName` is set
+    set:
+      additionalWorkerGroups:
+        smallGroup:
+          disabled: false
+          runtimeClassName: nvidia
+    asserts:
+      - equal:
+          path: spec.workerGroupSpecs[?(@.groupName=="smallGroup")].template.spec.runtimeClassName
+          value: nvidia

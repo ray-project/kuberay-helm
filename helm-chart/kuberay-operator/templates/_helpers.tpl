@@ -70,6 +70,17 @@ FeatureGates
 {{- end }}
 {{- end }}
 
+{{/*
+Whether the KubernetesWAS feature gate is enabled in .Values.featureGates.
+*/}}
+{{- define "kuberay.kubernetesWASEnabled" -}}
+{{- range .Values.featureGates -}}
+{{- if and (eq .name "KubernetesWAS") .enabled -}}
+true
+{{- end -}}
+{{- end -}}
+{{- end }}
+
 {{- /* Create the name of the service to use. */ -}}
 {{- define "kuberay-operator.service.name" -}}
 {{- include "kuberay-operator.fullname" . }}
@@ -104,6 +115,34 @@ FeatureGates
 {{- include "kuberay-operator.fullname" . -}}
 {{- end -}}
 
+{{/*
+Validate operator configuration values.
+This template validates reconcileConcurrency, kubeClient.qps, and kubeClient.burst.
+It should be called early in the deployment to ensure invalid values are caught.
+*/}}
+{{- define "kuberay-operator.validateConfig" -}}
+{{- if hasKey .Values "reconcileConcurrency" }}
+{{- $rc := toString .Values.reconcileConcurrency }}
+{{- if not (regexMatch "^[1-9][0-9]*$" $rc) }}
+{{- fail (printf "values.reconcileConcurrency must be a positive integer, got %q" $rc) }}
+{{- end }}
+{{- end }}
+{{- if hasKey .Values "kubeClient" }}
+{{- if hasKey .Values.kubeClient "qps" }}
+{{- $qps := toString .Values.kubeClient.qps }}
+{{- if not (regexMatch "^[0-9]+(\\.[0-9]+)?$" $qps) }}
+{{- fail (printf "values.kubeClient.qps must be a valid float number, got %q" $qps) }}
+{{- end }}
+{{- end }}
+{{- if hasKey .Values.kubeClient "burst" }}
+{{- $burst := toString .Values.kubeClient.burst }}
+{{- if not (regexMatch "^[0-9]+$" $burst) }}
+{{- fail (printf "values.kubeClient.burst must be a non-negative integer, got %q" $burst) }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- /* Create the name of the leader election role to use. */ -}}
 {{- define "kuberay-operator.leaderElectionRole.name" -}}
 {{- include "kuberay-operator.fullname" . -}}-leader-election
@@ -122,15 +161,7 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - endpoints
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - events
+  - persistentvolumeclaims
   - pods/status
   - services
   verbs:
@@ -166,6 +197,23 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - pods/resize
+  verbs:
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
   - serviceaccounts
   verbs:
   - create
@@ -195,6 +243,31 @@ rules:
   - update
   - watch
 - apiGroups:
+  - cert-manager.io
+  resources:
+  - certificates
+  verbs:
+  - create
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - cert-manager.io
+  resources:
+  - certificates/status
+  verbs:
+  - get
+- apiGroups:
+  - cert-manager.io
+  resources:
+  - issuers
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+- apiGroups:
   - coordination.k8s.io
   resources:
   - leases
@@ -203,6 +276,21 @@ rules:
   - get
   - list
   - update
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - events.k8s.io
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
 - apiGroups:
   - extensions
   - networking.k8s.io
@@ -217,6 +305,18 @@ rules:
   - update
   - watch
 - apiGroups:
+  - gateway.networking.k8s.io
+  resources:
+  - gateways
+  - httproutes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
   - networking.k8s.io
   resources:
   - ingressclasses
@@ -225,9 +325,21 @@ rules:
   - list
   - watch
 - apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
   - ray.io
   resources:
   - rayclusters
+  - raycronjobs
   - rayjobs
   - rayservices
   verbs:
@@ -242,6 +354,7 @@ rules:
   - ray.io
   resources:
   - rayclusters/finalizers
+  - raycronjobs/finalizers
   - rayjobs/finalizers
   - rayservices/finalizers
   verbs:
@@ -250,6 +363,7 @@ rules:
   - ray.io
   resources:
   - rayclusters/status
+  - raycronjobs/status
   - rayjobs/status
   - rayservices/status
   verbs:
@@ -289,6 +403,21 @@ rules:
   - patch
   - update
   - watch
+{{- if .kubernetesWASEnabled }}
+- apiGroups:
+  - scheduling.k8s.io
+  resources:
+  - podgroups
+  - workloads
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+{{- end -}}
 {{- if or .batchSchedulerEnabled (eq .batchSchedulerName "volcano") }}
 - apiGroups:
   - scheduling.volcano.sh
@@ -301,12 +430,6 @@ rules:
   - list
   - update
   - watch
-- apiGroups:
-  - apiextensions.k8s.io
-  resources:
-  - customresourcedefinitions
-  verbs:
-  - get
 {{- end -}}
 {{- if or .batchSchedulerEnabled (eq .batchSchedulerName "scheduler-plugins") }}
 - apiGroups:
