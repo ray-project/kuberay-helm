@@ -9,7 +9,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas | default 1 }}
   strategy:
     type: Recreate
   selector:
@@ -35,8 +35,9 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       serviceAccountName: {{ include "kuberay-operator.serviceAccount.name" . }}
-      {{- if and (.Values.logging.baseDir) (.Values.logging.fileName) }}
+      {{- if or (and (.Values.logging.baseDir) (.Values.logging.fileName)) .Values.configuration.enabled .Values.webhooks.enabled }}
       volumes:
+      {{- if and (.Values.logging.baseDir) (.Values.logging.fileName) }}
         - name: kuberay-logs
           {{- if .Values.logging.sizeLimit }}
           emptyDir:
@@ -45,9 +46,23 @@ spec:
           emptyDir: {}
           {{- end }}
       {{- end }}
+      {{- if .Values.configuration.enabled }}
+        - name: operator-config
+          configMap:
+            name: {{ include "kuberay-operator.deployment.name" . }}-config
+      {{- end }}
+      {{- if .Values.webhooks.enabled }}
+        - name: cert
+          secret:
+            secretName: {{ include "kuberay-operator.webhook.certSecretName" . }}
+      {{- end }}
+      {{- end }}
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -59,16 +74,32 @@ spec:
           {{- with .Values.image.pullPolicy }}
           imagePullPolicy: {{ . }}
           {{- end }}
-          {{- if and (.Values.logging.baseDir) (.Values.logging.fileName) }}
+          {{- if or (and (.Values.logging.baseDir) (.Values.logging.fileName)) .Values.configuration.enabled .Values.webhooks.enabled }}
           volumeMounts:
+          {{- if and (.Values.logging.baseDir) (.Values.logging.fileName) }}
             - name: kuberay-logs
               mountPath: "{{ .Values.logging.baseDir }}"
+          {{- end }}
+          {{- if .Values.configuration.enabled }}
+            - name: operator-config
+              mountPath: /etc/kuberay
+              readOnly: true
+          {{- end }}
+          {{- if .Values.webhooks.enabled }}
+            - name: cert
+              mountPath: /tmp/k8s-webhook-server/serving-certs
+              readOnly: true
+          {{- end }}
           {{- end }}
           command:
             - {{ .Values.operatorCommand }}
           args:
             {{- $argList := list -}}
-            {{- $argList = append $argList (include "kuberay.featureGates" . | trim) -}}
+            {{- if .Values.configuration.enabled -}}
+            {{- $argList = append $argList "--config" -}}
+            {{- $argList = append $argList "/etc/kuberay/config.yaml" -}}
+            {{- else -}}
+            {{- include "kuberay-operator.validateConfig" . -}}
             {{- if .Values.batchScheduler -}}
             {{- if .Values.batchScheduler.enabled -}}
             {{- $argList = append $argList "--enable-batch-scheduler" -}}
@@ -108,15 +139,56 @@ spec:
             {{- if and (hasKey .Values "metrics") (hasKey .Values.metrics "enabled") }}
             {{- $argList = append $argList (printf "--enable-metrics=%t" .Values.metrics.enabled) -}}
             {{- end -}}
+            {{- if and (hasKey .Values "nodeEventForwarder") (hasKey .Values.nodeEventForwarder "enabled") }}
+            {{- $argList = append $argList (printf "--enable-node-event-forwarder=%t" .Values.nodeEventForwarder.enabled) -}}
+            {{- if .Values.nodeEventForwarder.enabled }}
+            {{- if .Values.nodeEventForwarder.sources -}}
+            {{- $argList = append $argList (printf "--node-event-forwarder-sources=%s" (join "," .Values.nodeEventForwarder.sources)) -}}
+            {{- end -}}
+            {{- if .Values.nodeEventForwarder.reasons -}}
+            {{- $argList = append $argList (printf "--node-event-forwarder-reasons=%s" (join "," .Values.nodeEventForwarder.reasons)) -}}
+            {{- end -}}
+            {{- if .Values.nodeEventForwarder.types -}}
+            {{- $argList = append $argList (printf "--node-event-forwarder-types=%s" (join "," .Values.nodeEventForwarder.types)) -}}
+            {{- end -}}
+            {{- end -}}
+            {{- end -}}
+            {{- if hasKey .Values "reconcileConcurrency" -}}
+            {{- $argList = append $argList (printf "--reconcile-concurrency=%v" .Values.reconcileConcurrency) -}}
+            {{- end -}}
+            {{- if hasKey .Values "kubeClient" -}}
+            {{- if hasKey .Values.kubeClient "qps" -}}
+            {{- $argList = append $argList (printf "--qps=%v" .Values.kubeClient.qps) -}}
+            {{- end -}}
+            {{- if hasKey .Values.kubeClient "burst" -}}
+            {{- $argList = append $argList (printf "--burst=%v" .Values.kubeClient.burst) -}}
+            {{- end -}}
+            {{- end -}}
+            {{- if .Values.collectorImage -}}
+            {{- $argList = append $argList (printf "--collector-image=%s" .Values.collectorImage) -}}
+            {{- end -}}
+            {{- end -}}
+            {{- $argList = append $argList (include "kuberay.featureGates" . | trim) -}}
             {{- (printf "\n") -}}
             {{- $argList | toYaml | indent 12 }}
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
-          {{- with .Values.env }}
+          {{- if .Values.webhooks.enabled }}
+            - name: webhook-server
+              containerPort: 9443
+              protocol: TCP
+          {{- end }}
+          {{- if or .Values.env .Values.webhooks.enabled }}
           env:
+          {{- if .Values.webhooks.enabled }}
+            - name: ENABLE_WEBHOOKS
+              value: "true"
+          {{- end }}
+          {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- end }}
           livenessProbe:
             httpGet:

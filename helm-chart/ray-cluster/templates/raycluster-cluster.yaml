@@ -20,9 +20,39 @@ spec:
   autoscalerOptions:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with .Values.upgradeStrategy }}
+  upgradeStrategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.authOptions }}
+  authOptions:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if .Values.gcsFaultTolerance.enabled }}
+  gcsFaultToleranceOptions:
+    redisAddress: {{ .Values.gcsFaultTolerance.redisAddress | quote }}
+    {{- with .Values.gcsFaultTolerance.externalStorageNamespace }}
+    externalStorageNamespace: {{ . | quote }}
+    {{- end }}
+    {{- with .Values.gcsFaultTolerance.redisPassword }}
+    redisPassword:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.gcsFaultTolerance.redisUsername }}
+    redisUsername:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- end }}
   headGroupSpec:
     {{- with .Values.head.headService }}
     headService:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.head.enableIngress }}
+    enableIngress: {{ . }}
+    {{- end }}
+    {{- with .Values.head.ingressOptions }}
+    ingressOptions:
       {{- toYaml . | nindent 6 }}
     {{- end }}
     {{- with .Values.service.type }}
@@ -38,7 +68,6 @@ spec:
         {{ $key }}: {{ $val | quote }}
       {{- end }}
     {{- else }}
-    rayStartParams: {}
     {{- end }}
     template:
       metadata:
@@ -77,7 +106,7 @@ spec:
           env:
           {{- toYaml . | nindent 10 }}
           {{- end }}
-          {{- with .Values.head.envFrom }}
+          {{- with concat (.Values.common.envFrom | default list) (.Values.head.envFrom | default list) }}
           envFrom:
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -141,6 +170,9 @@ spec:
         {{- with .Values.head.restartPolicy }}
         restartPolicy: {{ . }}
         {{- end }}
+        {{- with .Values.head.runtimeClassName }}
+        runtimeClassName: {{ . }}
+        {{- end }}
         {{- with .Values.head.serviceAccountName }}
         serviceAccountName: {{ . }}
         {{- end }}
@@ -148,12 +180,20 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        {{- with .Values.head.resourceClaims }}
+        resourceClaims:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
   workerGroupSpecs:
   {{- if not .Values.worker.disabled }}
   - groupName: {{ .Values.worker.groupName }}
     replicas: {{ .Values.worker.replicas }}
     minReplicas: {{ .Values.worker.minReplicas | default 0 }}
-    maxReplicas: {{ .Values.worker.maxReplicas | default 2147483647 }}
+    {{- if ne .Values.worker.maxReplicas nil }}
+    maxReplicas: {{ .Values.worker.maxReplicas }}
+    {{- else }}
+    maxReplicas: 2147483647
+    {{- end }}
     numOfHosts: {{ .Values.worker.numOfHosts | default 1 }}
     {{- if or .Values.worker.rayStartParams .Values.worker.initArgs }}
     rayStartParams:
@@ -165,7 +205,6 @@ spec:
       {{ $key }}: {{ $val | quote }}
       {{- end }}
     {{- else }}
-    rayStartParams: {}
     {{- end }}
     template:
       metadata:
@@ -204,7 +243,7 @@ spec:
           env:
           {{- toYaml . | nindent 10 }}
           {{- end }}
-          {{- with .Values.worker.envFrom }}
+          {{- with concat (.Values.common.envFrom | default list) (.Values.worker.envFrom | default list) }}
           envFrom:
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -268,11 +307,18 @@ spec:
         {{- with .Values.worker.restartPolicy }}
         restartPolicy: {{ . }}
         {{- end }}
+        {{- with .Values.worker.runtimeClassName }}
+        runtimeClassName: {{ . }}
+        {{- end }}
         {{- with .Values.worker.serviceAccountName }}
         serviceAccountName: {{ . }}
         {{- end }}
         {{- with .Values.worker.podSecurityContext }}
         securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.worker.resourceClaims }}
+        resourceClaims:
           {{- toYaml . | nindent 10 }}
         {{- end }}
   {{- end }}
@@ -281,7 +327,11 @@ spec:
   - groupName: {{ $groupName }}
     replicas: {{ $values.replicas }}
     minReplicas: {{ $values.minReplicas | default 0 }}
-    maxReplicas: {{ $values.maxReplicas | default 2147483647 }}
+    {{- if ne $values.maxReplicas nil }}
+    maxReplicas: {{ $values.maxReplicas }}
+    {{- else }}
+    maxReplicas: 2147483647
+    {{- end }}
     numOfHosts: {{ $values.numOfHosts | default 1 }}
     {{- if or $values.rayStartParams $values.initArgs }}
     rayStartParams:
@@ -293,7 +343,6 @@ spec:
         {{ $key }}: {{ $val | quote }}
       {{- end }}
     {{- else }}
-    rayStartParams: {}
     {{- end }}
     template:
       metadata:
@@ -332,7 +381,7 @@ spec:
           env:
           {{- toYaml . | nindent 10 }}
           {{- end }}
-          {{- with $values.envFrom }}
+          {{- with concat ($.Values.common.envFrom | default list) ($values.envFrom | default list) }}
           envFrom:
           {{- toYaml . | nindent 10 }}
           {{- end }}
@@ -351,6 +400,14 @@ spec:
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
+          {{- else }}
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+            requests:
+              cpu: "1"
+              memory: "1Gi"
           {{- end }}
           {{- with $values.securityContext }}
           securityContext:
@@ -396,11 +453,18 @@ spec:
         {{- with $values.restartPolicy }}
         restartPolicy: {{ . }}
         {{- end }}
+        {{- with $values.runtimeClassName }}
+        runtimeClassName: {{ . }}
+        {{- end }}
         {{- with $values.serviceAccountName }}
         serviceAccountName: {{ . }}
         {{- end }}
         {{- with $values.podSecurityContext }}
         securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $values.resourceClaims }}
+        resourceClaims:
           {{- toYaml . | nindent 10 }}
         {{- end }}
   {{- end }}
