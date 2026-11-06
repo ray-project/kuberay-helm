@@ -11,6 +11,15 @@ entries:
     - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-1.8.0-rc.0/kuberay-apiserver-1.8.0-rc.0.tgz
     version: 1.8.0-rc.0
   - apiVersion: v2
+    created: "2026-11-06T01:42:10.984640518Z"
+    description: A Helm chart for kuberay-apiserver
+    digest: b23beb904847ce8304116f8a5c5e1e8fae7358af8ec212e37ac932970039b7f6
+    name: kuberay-apiserver
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-apiserver-1.7.2/kuberay-apiserver-1.7.2.tgz
+    version: 1.7.2
+  - apiVersion: v2
     created: "2026-09-18T05:03:19.021909305Z"
     description: A Helm chart for kuberay-apiserver
     digest: 47580b656c381bebba7443d9d534143f69c7f5794a95c966e83878ffad22b056
@@ -465,6 +474,27 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-1.8.0-rc.0/kuberay-operator-1.8.0-rc.0.tgz
     version: 1.8.0-rc.0
+  - apiVersion: v2
+    created: "2026-11-06T01:42:11.16273116Z"
+    description: A Helm chart for deploying the Kuberay operator on Kubernetes.
+    digest: 2f8fc8a897edfe83686e8e45f9aa6908bd8cb66bec839ab4f2a12b667288b446
+    home: https://github.com/ray-project/kuberay
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    keywords:
+    - ray
+    - ray operator
+    - distributed computing
+    - data processing
+    - machine learning
+    - deep learning
+    - hyperparameter tuning
+    - reinforcement learning
+    - model serving
+    name: kuberay-operator
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/kuberay-operator-1.7.2/kuberay-operator-1.7.2.tgz
+    version: 1.7.2
   - apiVersion: v2
     created: "2026-09-18T05:03:19.164549734Z"
     description: A Helm chart for deploying the Kuberay operator on Kubernetes.
@@ -1157,6 +1187,17 @@ entries:
     - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-1.8.0-rc.0/ray-cluster-1.8.0-rc.0.tgz
     version: 1.8.0-rc.0
   - apiVersion: v2
+    created: "2026-11-06T01:42:11.303595675Z"
+    description: A Helm chart for deploying the RayCluster with the kuberay operator.
+    digest: b752d5ac7d01bb2e10be5714fae4530211f48936bf7b61bea8f76076a7bb3d42
+    home: https://github.com/ray-project/kuberay
+    icon: https://github.com/ray-project/ray/raw/master/doc/source/images/ray_header_logo.png
+    name: ray-cluster
+    type: application
+    urls:
+    - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-1.7.2/ray-cluster-1.7.2.tgz
+    version: 1.7.2
+  - apiVersion: v2
     created: "2026-09-18T05:03:19.304389719Z"
     description: A Helm chart for deploying the RayCluster with the kuberay operator.
     digest: b71f5b19a2314cb7919f42d07146527b714d2e5e6e95af0f3da561f0b5616f55
@@ -1607,4 +1648,4 @@ entries:
     urls:
     - https://github.com/ray-project/kuberay-helm/releases/download/ray-cluster-0.4.0-rc.0/ray-cluster-0.4.0-rc.0.tgz
     version: 0.4.0-rc.0
-generated: "2026-11-05T09:20:00.960717331Z"
+generated: "2026-11-06T01:42:11.304701503Z"
